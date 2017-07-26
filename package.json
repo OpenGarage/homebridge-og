@@ -1,0 +1,39 @@
+{
+	"author": {
+		"name": "OpenSprinkler"
+	},
+	"bundleDependencies": false,
+	"dependencies": {
+		"request": "2.49.x"
+	},
+	"deprecated": false,
+	"description": "Homebridge garage plugin for OpenGarage",
+	"devDependencies": {},
+	"directories": {},
+	"engines": {
+		"homebridge": ">=0.2.0",
+		"node": ">=0.12.0"
+	},
+	"keywords": [
+		"homebridge-plugin",
+		"OpenGarage"
+	],
+	"license": "MIT",
+	"main": "index.js",
+	"maintainers": [
+		{
+			"name": "chickenmilk",
+			"email": "chickenmilk@yandex.com"
+		},
+		{
+			"name": "Samer Albahra",
+			"email": "salbahra@gmail.com"
+		}
+	],
+	"name": "homebridge-opengarage-v2",
+	"optionalDependencies": {},
+	"scripts": {
+	"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"version": "1.0.4"
+}
