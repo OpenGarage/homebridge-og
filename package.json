@@ -1,6 +1,6 @@
 {
 	"author": {
-		"name": "OpenSprinkler"
+		"name": "Samer Albahra"
 	},
 	"bundleDependencies": false,
 	"dependencies": {
@@ -30,10 +30,10 @@
 			"email": "salbahra@gmail.com"
 		}
 	],
-	"name": "homebridge-opengarage-v2",
+	"name": "homebridge-og",
 	"optionalDependencies": {},
 	"scripts": {
 	"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"version": "1.0.4"
+	"version": "2.0.0"
 }

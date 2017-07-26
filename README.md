@@ -7,7 +7,7 @@ made to work with OpenGarage
 # Installation
 
 1. Install homebridge using: npm install -g homebridge
-2. Install this plugin using: npm install -g homebridge-opengarage-v2
+2. Install this plugin using: npm install -g homebridge-og
 3. Update your config.json configuration file. See the example below.
 
 # Example config.json:
@@ -16,7 +16,7 @@ made to work with OpenGarage
 		"accessories":
 		[
 			{
-				"accessory": "opengarage",
+				"accessory": "OpenGarage",
 				"name": "Garage",
 				"ip": "192.168.0.4",
 				"key": "YourPassword"

@@ -6,7 +6,7 @@ module.exports = function( homebridge ) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
 
-    homebridge.registerAccessory( "homebridge-opengarage", "opengarage", OpenGarageConnect );
+    homebridge.registerAccessory( "homebridge-og", "OpenGarage", OpenGarageConnect );
 };
 
 function OpenGarageConnect( log, config ) {
@@ -26,14 +26,6 @@ function OpenGarageConnect( log, config ) {
         .getCharacteristic( Characteristic.TargetDoorState )
         .on( "get", this.getState.bind( this ) )
         .on( "set", this.changeState.bind( this ) );
-
-    this.garageservice
-        .getCharacteristic( Characteristic.ObstructionDetected )
-        .on( "get", this.getStateObstruction.bind( this ) );
-};
-
-OpenGarageConnect.prototype.getStateObstruction = function( callback ) {
-    callback( null, false );
 };
 
 OpenGarageConnect.prototype.getState = function( callback ) {
