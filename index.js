@@ -34,9 +34,9 @@ OpenGarageConnect.prototype.getState = function( callback ) {
     request.get( {
         url: "http://" + this.ip + "/jc"
     }, function( err, response, body ) {
-        if ( !err && response.statusCode == 200 ) {
+        if ( !err && response.statusCode === 200 ) {
             var json = JSON.parse( body ),
-				value = parseInt( json.door ),
+				value = json.door,
 				state, statedoor;
 
             if ( value === 0 ) {
