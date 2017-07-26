@@ -24,7 +24,6 @@ function OpenGarageConnect( log, config ) {
 
     this.garageservice
         .getCharacteristic( Characteristic.TargetDoorState )
-        .on( "get", this.getState.bind( this ) )
         .on( "set", this.changeState.bind( this ) );
 };
 
@@ -35,22 +34,10 @@ OpenGarageConnect.prototype.getState = function( callback ) {
         url: "http://" + this.ip + "/jc"
     }, function( err, response, body ) {
         if ( !err && response.statusCode === 200 ) {
-            var json = JSON.parse( body ),
-				value = json.door,
-				state, statedoor;
+            var value = JSON.parse( body ).door;
 
-            if ( value === 0 ) {
-                state = "closed";
-                statedoor = true;
-            }
-
-            if ( value === 1 ) {
-                state = "open";
-                statedoor = false;
-            }
-
-            this.log( "Status garage: %s", state );
-            callback( null, statedoor );
+            this.log( "Status garage: %s", value === 0 ? "closed" : "open" );
+            callback( null, value === 0 ? true : false );
         } else {
             this.log( "Error getting state: %s", err );
             callback( err );
@@ -59,15 +46,14 @@ OpenGarageConnect.prototype.getState = function( callback ) {
 };
 
 OpenGarageConnect.prototype.changeState = function( state, callback ) {
-    var doorState = ( state == Characteristic.TargetDoorState.CLOSED ) ? "closed" : "open";
-    this.log( "Set state to %s", doorState );
+    this.log( "Set state to %s", state === Characteristic.TargetDoorState.CLOSED ? "closed" : "open" );
 
     request.get( {
         url: "http://" + this.ip + "/cc?dkey=" + this.key + "&click=1"
     }, function( err, response, body ) {
         if ( !err && response.statusCode === 200 ) {
             this.log( "State change complete." );
-            var currentState = ( state == Characteristic.TargetDoorState.CLOSED ) ? Characteristic.CurrentDoorState.CLOSED : Characteristic.CurrentDoorState.OPEN;
+            var currentState = ( state === Characteristic.TargetDoorState.CLOSED ) ? Characteristic.CurrentDoorState.CLOSED : Characteristic.CurrentDoorState.OPEN;
 
             this.garageservice
                 .setCharacteristic( Characteristic.CurrentDoorState, currentState );
