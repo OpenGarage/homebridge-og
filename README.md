@@ -1,7 +1,7 @@
 # OpenGarage Garage door
 
 Homebridge plugin for [OpenGarage](https://opengarage.io).
-This plugin is a slightly modified version of [homebridge-loxone-garage](https://www.npmjs.com/package/homebridge-loxone-garage)
+This plugin is a modified version of [homebridge-loxone-garage](https://www.npmjs.com/package/homebridge-loxone-garage)
 made to work with OpenGarage
 
 ## Installation
@@ -30,7 +30,4 @@ made to work with OpenGarage
 
 1. Change the IP in the example to the IP or hostname of your OpenGarage.
 1. Be sure to change the "YourPassword" part to the password used for your OpenGarage.
-1. Enjoy telling Siri to open and close your Garage.
-1. You can also enable push notifications for your OpenGarage when it is opened or closed via the Home app on iOS now too.
-
-(Mine was enabled by default)
+1. Enjoy telling Siri to open and close your Garage as well as receiving push notifications on state change.
