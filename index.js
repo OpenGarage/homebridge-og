@@ -16,15 +16,24 @@ function OpenGarageConnect( log, config ) {
     this.ip = config.ip;
     this.key = config.key;
 
-    this.garageservice = new Service.GarageDoorOpener( this.name );
+    this.garageService = new Service.GarageDoorOpener( this.name );
 
-    this.garageservice
+    this.garageService
         .getCharacteristic( Characteristic.CurrentDoorState )
         .on( "get", this.getState.bind( this ) );
 
-    this.garageservice
+    this.garageService
         .getCharacteristic( Characteristic.TargetDoorState )
+        .on( "get", this.getState.bind( this ) )
         .on( "set", this.changeState.bind( this ) );
+
+    this.garageService
+		.getCharacteristic( Characteristic.ObstructionDetected )
+		.on( "get", this.getStateObstruction.bind( this ) );
+}
+
+OpenGarageConnect.prototype.getStateObstruction = function( callback ) {
+    callback( null, false );
 }
 
 OpenGarageConnect.prototype.getState = function( callback ) {
@@ -53,10 +62,11 @@ OpenGarageConnect.prototype.changeState = function( state, callback ) {
             var currentState = ( state === Characteristic.TargetDoorState.CLOSED ) ?
                 Characteristic.CurrentDoorState.CLOSED : Characteristic.CurrentDoorState.OPEN;
 
-            this.garageservice
-                .setCharacteristic( Characteristic.CurrentDoorState, currentState );
-
-            callback( null );
+            /** Add delay to wait for the door to finish opening or closing */
+            setTimeout( function() {
+                this.garageService.setCharacteristic( Characteristic.CurrentDoorState, currentState );
+                callback( null );
+            }.bind( this ), 10000 );
         } else {
             this.log( "Error '%s' setting door state. Response: %s", err, body );
             callback( err || new Error( "Error setting door state." ) );
@@ -65,5 +75,5 @@ OpenGarageConnect.prototype.changeState = function( state, callback ) {
 };
 
 OpenGarageConnect.prototype.getServices = function() {
-    return [ this.garageservice ];
+    return [ this.garageService ];
 };
