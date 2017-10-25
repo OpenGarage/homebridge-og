@@ -8,7 +8,9 @@
 	},
 	"deprecated": false,
 	"description": "Homebridge garage plugin for OpenGarage",
-	"devDependencies": {},
+	"devDependencies": {
+		"eslint": "^4.9.0"
+	},
 	"directories": {},
 	"engines": {
 		"homebridge": ">=0.2.0",
@@ -33,7 +35,7 @@
 	"name": "homebridge-og",
 	"optionalDependencies": {},
 	"scripts": {
-	"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"version": "2.0.0"
 }
