@@ -1,5 +1,5 @@
 var request = require( "request" );
-var Service
+var Service;
 var Characteristic;
 
 module.exports = function( homebridge ) {
@@ -34,7 +34,7 @@ function OpenGarageConnect( log, config ) {
 
 OpenGarageConnect.prototype.getStateObstruction = function( callback ) {
     callback( null, false );
-}
+};
 
 OpenGarageConnect.prototype.getState = function( callback ) {
     this.log( "Getting current state..." );
@@ -55,21 +55,32 @@ OpenGarageConnect.prototype.getState = function( callback ) {
 OpenGarageConnect.prototype.changeState = function( state, callback ) {
     this.log( "Set state to %s", state === Characteristic.TargetDoorState.CLOSED ? "closed" : "open" );
 
-    request.get( { url: "http://" + this.ip + "/cc?dkey=" + this.key + "&click=1" }, function( err, response, body ) {
+    this.getState( function( err, actualState ) {
+        if ( !!state === actualState ) {
 
-        if ( !err && response.statusCode === 200 ) {
-            this.log( "State change complete." );
-            var currentState = ( state === Characteristic.TargetDoorState.CLOSED ) ?
-                Characteristic.CurrentDoorState.CLOSED : Characteristic.CurrentDoorState.OPEN;
-
-            /** Add delay to wait for the door to finish opening or closing */
             setTimeout( function() {
-                this.garageService.setCharacteristic( Characteristic.CurrentDoorState, currentState );
+                this.garageService.setCharacteristic( Characteristic.CurrentDoorState, state );
                 callback( null );
             }.bind( this ), 10000 );
         } else {
-            this.log( "Error '%s' setting door state. Response: %s", err, body );
-            callback( err || new Error( "Error setting door state." ) );
+
+            request.get( { url: "http://" + this.ip + "/cc?dkey=" + this.key + "&click=1" }, function( err, response, body ) {
+
+                if ( !err && response.statusCode === 200 ) {
+                    this.log( "State change complete." );
+                    var currentState = ( state === Characteristic.TargetDoorState.CLOSED ) ?
+                        Characteristic.CurrentDoorState.CLOSED : Characteristic.CurrentDoorState.OPEN;
+
+                    /** Add delay to wait for the door to finish opening or closing */
+                    setTimeout( function() {
+                        this.garageService.setCharacteristic( Characteristic.CurrentDoorState, currentState );
+                        callback( null );
+                    }.bind( this ), 10000 );
+                } else {
+                    this.log( "Error '%s' setting door state. Response: %s", err, body );
+                    callback( err || new Error( "Error setting door state." ) );
+                }
+            }.bind( this ) );
         }
     }.bind( this ) );
 };
