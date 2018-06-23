@@ -20,7 +20,9 @@ made to work with OpenGarage
                 "accessory": "OpenGarage",
                 "name": "Garage",
                 "ip": "192.168.0.4",
-                "key": "YourPassword"
+                "key": "YourPassword",
+                "openCloseDurationSecs": 22,
+                "pollFrequencySecs": 60
             }
         ]
     }
@@ -31,3 +33,5 @@ made to work with OpenGarage
 1. Change the IP in the example to the IP or hostname of your OpenGarage.
 1. Be sure to change the "YourPassword" part to the password used for your OpenGarage.
 1. Enjoy telling Siri to open and close your Garage as well as receiving push notifications on state change.
+1. Measure how long it takes for your garage door to close after triggering the state change using OpenGarage, including
+   the warning beeps if applicable. Set the value `openCloseDurationSecs` accordingly.
