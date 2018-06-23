@@ -86,7 +86,7 @@ function eventually(fn) {
                     reject(err)
                 }
             }
-        }, 50)
+        }, 5)
     })
 }
 
@@ -157,8 +157,17 @@ describe('OpenGarage', function() {
     })
 
     describe('#constructor', () => {
+        it('throws an error if last poll result was an error', async () => {
+            mockOpenGarageApi.getState = () => Promise.reject("HTTP ERROR")
+            MockSetTimeout.invoke(openGarage.pollTimer)
+            await eventually(() => {
+                assert.throws(() => currentDoorState.triggerGetSync())
+            })
+        })
+
         it('polls the status and propagates values to Home', async () => {
-            assert.equal(openGarage.isClosed, true)
+            MockSetTimeout.invoke(openGarage.pollTimer)
+            assert.equal(openGarage.isClosed(), true)
             assert.equal(Characteristic.CurrentDoorState.CLOSED, currentDoorState.value)
             assert.equal(Characteristic.TargetDoorState.CLOSED, targetDoorState.value)
 
@@ -172,7 +181,7 @@ describe('OpenGarage', function() {
 
             // when api call returns these should be updated
             await eventually(() => {
-                assert.equal(openGarage.isClosed, false)
+                assert.equal(openGarage.isClosed(), false)
                 assert.equal(Characteristic.CurrentDoorState.OPEN, currentDoorState.value)
                 assert.equal(Characteristic.TargetDoorState.OPEN, targetDoorState.value)
             })
@@ -187,7 +196,7 @@ describe('OpenGarage', function() {
             
             let [pollTimer, afterTimer] = MockSetTimeout.getTimers()
             assert.equal(pollTimer.duration, pollFrequencyMs) // default poll
-            assert.equal(afterTimer.duration, openDurationMs) // poll
+            assert.equal(afterTimer.duration, openDurationMs) // amount of time to wait to check state
 
             mockOpenGarageApi.isClosed = false
             MockDate.currentTime += openDurationMs
@@ -197,12 +206,6 @@ describe('OpenGarage', function() {
                 assert.equal(mockOpenGarageApi.targetClosedState, false)
                 assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.OPEN)
                 assert.equal(openGarage.targetDoorState(), Characteristic.TargetDoorState.OPEN)
-            })
-            // the existing poll is cancelled and a new poll is scheduled
-            await eventually(() => {
-                let [currentTimer] = MockSetTimeout.getTimers()
-                assert.equal(currentTimer.duration, pollFrequencyMs)
-                assert.notEqual(pollTimer.idx, currentTimer.idx)
             })
         })
 
