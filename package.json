@@ -4,7 +4,9 @@
 	},
 	"bundleDependencies": false,
 	"dependencies": {
-		"request": "2.49.x"
+		"mocha": "^5.2.0",
+		"request": "2.49.x",
+		"request-promise-native": "^1.0.5"
 	},
 	"deprecated": false,
 	"description": "Homebridge garage plugin for OpenGarage",
@@ -13,8 +15,8 @@
 	},
 	"directories": {},
 	"engines": {
-		"homebridge": ">=0.2.0",
-		"node": ">=0.12.0"
+		"homebridge": ">=0.4.0",
+		"node": ">=8.1.4"
 	},
 	"keywords": [
 		"homebridge-plugin",
@@ -37,5 +39,5 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"version": "2.1.0"
+	"version": "3.0.0"
 }
