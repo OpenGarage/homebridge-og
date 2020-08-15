@@ -16,7 +16,10 @@ module.exports = function( homebridge ) {
             this.openGarage = new OpenGarage(config.name, true)
         }
         getServices() {
-            return([this.openGarage.garageService])
+            return([
+		   this.openGarage.garageService,
+		   this.openGarage.vehicleService,
+	           ])
         }
     }
     homebridge.registerAccessory( "homebridge-og", "OpenGarage", OpenGarageConnect );
