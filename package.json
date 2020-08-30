@@ -5,7 +5,7 @@
 	"bundleDependencies": false,
 	"dependencies": {
 		"mocha": "^5.2.0",
-		"request": "2.49.x",
+		"request": "2.88.x",
 		"request-promise-native": "^1.0.5"
 	},
 	"deprecated": false,
