@@ -36,8 +36,8 @@
 	],
 	"name": "homebridge-og",
 	"optionalDependencies": {},
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
+        "scripts": {
+                "test": "mocha"
+        },
 	"version": "3.1.1"
 }

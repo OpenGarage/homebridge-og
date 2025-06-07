@@ -98,8 +98,8 @@ describe('OpenGarage', function() {
     var MockDate
     var currentDoorState
     var targetDoorState
-    let pollFrequencyMs = OpenGarageModule.defaults.pollFrequencyMs
-    var openDurationMs = OpenGarageModule.defaults.openDurationMs
+    let pollFrequencyMs = OpenGarageModule.defaults.pollFrequencySecs * 1000
+    var openDurationMs = OpenGarageModule.defaults.openCloseDurationSecs * 1000
     let Characteristic = MockHomebridge.hap.Characteristic
     let Service = MockHomebridge.hap.Service
 
