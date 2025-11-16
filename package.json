@@ -11,7 +11,7 @@
 	"deprecated": false,
 	"description": "Homebridge garage plugin for OpenGarage",
 	"devDependencies": {
-		"eslint": "^4.9.0"
+		"eslint": "^9.39.1"
 	},
 	"directories": {},
 	"engines": {
