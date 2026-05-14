@@ -15,35 +15,33 @@ class MockDevice {
     this.characteristics[characteristic.name] = value
     return this
   }
+  setPrimaryService() { return this }
+  addLinkedService() { return this }
 }
 
 class Characteristic {
     constructor(char) {
         this.name = char.name
         this.characteristic = char
-        this._on = {}
+        this._handlers = {}
     }
 
-    on(key, fn) {
-        this._on[key] = fn
-        return this;
+    onGet(fn) {
+        this._handlers['get'] = fn
+        return this
+    }
+
+    onSet(fn) {
+        this._handlers['set'] = fn
+        return this
     }
 
     triggerGetSync() {
-        var result
-        this._on['get']((err, r) => result =r )
-        return result
+        return this._handlers['get']()
     }
 
-    triggetSetAsync(value) {
-        return new Promise((accept, reject) => {
-            this._on['set'](value, (err) => {
-                if (err != null)
-                    reject(err)
-                else
-                    accept()
-            })
-        })
+    async triggetSetAsync(value) {
+        return await this._handlers['set'](value)
     }
 
     updateValue(value) {
@@ -52,23 +50,34 @@ class Characteristic {
 }
 
 class GarageDoorOpener extends MockDevice {}
+class OccupancySensor extends MockDevice {}
+class AccessoryInformation extends MockDevice {}
+
+class MockHapStatusError extends Error {
+    constructor(status) {
+        super(`HAP Status ${status}`)
+        this.hapStatus = status
+    }
+}
+const MockHAPStatus = {SERVICE_COMMUNICATION_FAILURE: -70402}
 const MockHomebridge = {
     hap: {
         uuid: { generate: (input) => input },
-        Service: {GarageDoorOpener},
+        Service: {GarageDoorOpener, OccupancySensor, AccessoryInformation},
         Characteristic: {
             Manufacturer: {name: "Manufacturer"},
             Model: {name: "Model"},
             SerialNumber: {name: "SerialNumber"},
             TargetDoorState: {name: "TargetDoorState", CLOSED: "T_CLOSED", OPEN: "T_OPEN"},
             CurrentDoorState: {name: "CurrentDoorState", CLOSED: "CLOSED", OPEN: "OPEN"},
-            ObstructionDetected: {name: "ObstructionDetected"}
+            ObstructionDetected: {name: "ObstructionDetected"},
+            OccupancyDetected: {name: "OccupancyDetected", OCCUPANCY_DETECTED: "DETECTED", OCCUPANCY_NOT_DETECTED: "NOT_DETECTED"}
         }
     }
 }
 
 function MockLog() {
-    this.console.log.apply(null, arguments)
+    console.log.apply(null, arguments)
 }
 MockLog.debug = console.log
 
@@ -98,8 +107,8 @@ describe('OpenGarage', function() {
     var MockDate
     var currentDoorState
     var targetDoorState
-    let pollFrequencyMs = OpenGarageModule.defaults.pollFrequencyMs
-    var openDurationMs = OpenGarageModule.defaults.openDurationMs
+    const pollFrequencyMs = OpenGarageModule.defaults.pollFrequencySecs * 1000
+    const openDurationMs = OpenGarageModule.defaults.openCloseDurationSecs * 1000
     let Characteristic = MockHomebridge.hap.Characteristic
     let Service = MockHomebridge.hap.Service
 
@@ -147,6 +156,8 @@ describe('OpenGarage', function() {
             openGarageApi: mockOpenGarageApi,
             Service: Service,
             Characteristic: Characteristic,
+            HapStatusError: MockHapStatusError,
+            HAPStatus: MockHAPStatus,
             setTimeout: MockSetTimeout,
             clearTimeout: MockClearTimeout,
             Date: MockDate})
@@ -191,9 +202,9 @@ describe('OpenGarage', function() {
             await targetDoorState.triggetSetAsync(Characteristic.TargetDoorState.OPEN)
 
             assert.equal(mockOpenGarageApi.targetClosedState, false)
-            assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.CLOSED)
+            assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.OPENING)
             assert.equal(openGarage.targetDoorState(), Characteristic.TargetDoorState.OPEN)
-            
+
             let [pollTimer, afterTimer] = MockSetTimeout.getTimers()
             assert.equal(pollTimer.duration, pollFrequencyMs) // default poll
             assert.equal(afterTimer.duration, openDurationMs) // amount of time to wait to check state
@@ -213,9 +224,9 @@ describe('OpenGarage', function() {
             await targetDoorState.triggetSetAsync(Characteristic.TargetDoorState.OPEN)
 
             assert.equal(mockOpenGarageApi.targetClosedState, false)
-            assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.CLOSED)
+            assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.OPENING)
             assert.equal(openGarage.targetDoorState(), Characteristic.TargetDoorState.OPEN)
-            
+
             let [pollTimer, afterTimer] = MockSetTimeout.getTimers()
             assert.equal(pollTimer.duration, pollFrequencyMs) // default poll
             assert.equal(afterTimer.duration, openDurationMs) // poll
@@ -224,7 +235,7 @@ describe('OpenGarage', function() {
 
             await eventually(() =>{
                 assert.equal(mockOpenGarageApi.targetClosedState, false)
-                assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.CLOSED)
+                assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.OPENING)
                 assert.equal(openGarage.targetDoorState(), Characteristic.TargetDoorState.OPEN)
             })
             MockDate.currentTime += openDurationMs
