@@ -8,25 +8,31 @@ made to work with OpenGarage
 
 This plugin only works with OpenGarage Firmware 1.0.8 or later.
 
-You must have NodeJS `v8.1.4` or later installed as `homebridge-og` depends on JavaScript features introduced at that point. Check your node version:
+You must have Node.js `v18.0.0` or later installed (required for native fetch support). Check your node version:
 
 ```
 node --version
 ```
 
-You need [Homebridge](https://github.com/nfarina/homebridge) installed and configured. This plugin was developed against Homebridge `0.4.43`.
+You need [Homebridge](https://github.com/nfarina/homebridge) installed and configured. This plugin requires Homebridge `1.8.0` or later.
 
 ```
 npm install -g homebridge
 ```
 
-Install this plugin from source:
+Install this plugin directly from GitHub:
 
 ```
-git clone ...
+npm install -g github:identd113/homebridge-og
+```
+
+Or from source:
+
+```
+git clone https://github.com/identd113/homebridge-og.git
 cd homebridge-og
 npm pack
-sudo npm install -g homebridge-og-3.0.0.tgz
+sudo npm install -g homebridge-og-$(node -e "console.log(require('./package.json').version)").tgz
 ```
 
 ## Configuration
@@ -37,6 +43,7 @@ Update your config.json configuration file. See the example below.
 - `key` - The password to control your OpenGarage device
 - `openCloseDurationSecs` - The amount of time within which an open/close transition should reliably complete (and OpenGarage will sense the new door state), including the OpenGarage warning beeps.
 - `pollFrequencySecs` - How often to poll OpenGarage for state changes. This will enable state updates for the garage door when not controlled via this homebridge plugin.
+- `logFrequencySecs` - (Optional) How often to log a routine status message. Defaults to `60`. A status line is always logged immediately when the door or vehicle state changes regardless of this setting.
 
 ### Sample config.json
 
@@ -50,7 +57,8 @@ Update your config.json configuration file. See the example below.
                 "ip": "192.168.0.4",
                 "key": "YourPassword",
                 "openCloseDurationSecs": 22,
-                "pollFrequencySecs": 60
+                "pollFrequencySecs": 60,
+                "logFrequencySecs": 60
             }
         ]
     }
