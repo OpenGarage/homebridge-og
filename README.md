@@ -23,13 +23,13 @@ npm install -g homebridge
 Install this plugin directly from GitHub:
 
 ```
-npm install -g github:identd113/homebridge-og
+npm install -g github:OpenGarage/homebridge-og
 ```
 
 Or from source:
 
 ```
-git clone https://github.com/identd113/homebridge-og.git
+git clone https://github.com/OpenGarage/homebridge-og.git
 cd homebridge-og
 npm pack
 sudo npm install -g homebridge-og-$(node -e "console.log(require('./package.json').version)").tgz
