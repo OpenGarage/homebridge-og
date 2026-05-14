@@ -1,8 +1,6 @@
 # OpenGarage Garage door
 
 Homebridge plugin for [OpenGarage](https://opengarage.io).
-This plugin is a modified version of [homebridge-loxone-garage](https://www.npmjs.com/package/homebridge-loxone-garage)
-made to work with OpenGarage
 
 ## Installation
 
@@ -14,13 +12,19 @@ You must have Node.js `v18.0.0` or later installed (required for native fetch su
 node --version
 ```
 
-You need [Homebridge](https://github.com/nfarina/homebridge) installed and configured. This plugin requires Homebridge `1.8.0` or later.
+You need [Homebridge](https://github.com/homebridge/homebridge) installed and configured. This plugin requires Homebridge `1.8.0` or later.
 
 ```
 npm install -g homebridge
 ```
 
-Install this plugin directly from GitHub:
+Install this plugin from npm:
+
+```
+npm install -g homebridge-og
+```
+
+Or directly from GitHub:
 
 ```
 npm install -g github:OpenGarage/homebridge-og
