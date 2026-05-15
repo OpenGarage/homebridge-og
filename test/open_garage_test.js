@@ -109,6 +109,7 @@ describe('OpenGarage', function() {
     var targetDoorState
     const pollFrequencyMs = OpenGarageModule.defaults.pollFrequencySecs * 1000
     const openDurationMs = OpenGarageModule.defaults.openCloseDurationSecs * 1000
+    const transitionPollMs = 2000
     let Characteristic = MockHomebridge.hap.Characteristic
     let Service = MockHomebridge.hap.Service
 
@@ -208,10 +209,9 @@ describe('OpenGarage', function() {
 
             let [pollTimer, afterTimer] = MockSetTimeout.getTimers()
             assert.equal(pollTimer.duration, pollFrequencyMs) // default poll
-            assert.equal(afterTimer.duration, openDurationMs) // amount of time to wait to check state
+            assert.equal(afterTimer.duration, transitionPollMs) // rapid poll interval
 
             mockOpenGarageApi.isClosed = false
-            MockDate.currentTime += openDurationMs
             MockSetTimeout.invoke(afterTimer)
 
             await eventually(() =>{
@@ -230,7 +230,7 @@ describe('OpenGarage', function() {
 
             let [pollTimer, afterTimer] = MockSetTimeout.getTimers()
             assert.equal(pollTimer.duration, pollFrequencyMs) // default poll
-            assert.equal(afterTimer.duration, openDurationMs) // poll
+            assert.equal(afterTimer.duration, transitionPollMs) // rapid poll interval
 
             MockSetTimeout.invoke(afterTimer)
 
