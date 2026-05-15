@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.2.1] - 2026-05-15
+
+### Added
+- Rapid polling every 2 seconds during an open/close transition — tile confirms the new state as soon as the device reports it rather than waiting the full `openCloseDurationSecs` window
+- `CurrentDoorState` and `TargetDoorState` are pushed to HomeKit immediately when a command is sent, so the tile shows `Closing`/`Opening` without delay
+
+### Changed
+- `getState` (`onGet` handler) now awaits a fresh device poll before returning — navigating to the tile always shows live state instead of the last cached value
+
 ## [3.2.0] - 2026-05-14
 
 ### Added
