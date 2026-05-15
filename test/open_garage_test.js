@@ -171,9 +171,8 @@ describe('OpenGarage', function() {
         it('throws an error if last poll result was an error', async () => {
             mockOpenGarageApi.getState = () => Promise.reject("HTTP ERROR")
             MockSetTimeout.invoke(openGarage.pollTimer)
-            await eventually(() => {
-                assert.throws(() => currentDoorState.triggerGetSync())
-            })
+            await eventually(() => assert.ok(openGarage.currentState.error))
+            await assert.rejects(currentDoorState.triggerGetSync())
         })
 
         it('polls the status and propagates values to Home', async () => {
@@ -204,6 +203,8 @@ describe('OpenGarage', function() {
             assert.equal(mockOpenGarageApi.targetClosedState, false)
             assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.OPENING)
             assert.equal(openGarage.targetDoorState(), Characteristic.TargetDoorState.OPEN)
+            assert.equal(currentDoorState.value, Characteristic.CurrentDoorState.OPENING)
+            assert.equal(targetDoorState.value, Characteristic.TargetDoorState.OPEN)
 
             let [pollTimer, afterTimer] = MockSetTimeout.getTimers()
             assert.equal(pollTimer.duration, pollFrequencyMs) // default poll
