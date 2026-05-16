@@ -1,0 +1,41 @@
+name: npm publish
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm test
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - name: Validate version is unpublished
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "homebridge-og@$VERSION" version >/dev/null 2>&1; then
+            echo "Version $VERSION is already published. Bump package.json version first."
+            exit 1
+          fi
+          echo "Publishing homebridge-og@$VERSION"
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
