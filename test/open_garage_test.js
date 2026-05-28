@@ -109,6 +109,7 @@ describe('OpenGarage', function() {
     var targetDoorState
     const pollFrequencyMs = OpenGarageModule.defaults.pollFrequencySecs * 1000
     const openDurationMs = OpenGarageModule.defaults.openCloseDurationSecs * 1000
+    const transitionPollMs = 2000
     let Characteristic = MockHomebridge.hap.Characteristic
     let Service = MockHomebridge.hap.Service
 
@@ -171,9 +172,8 @@ describe('OpenGarage', function() {
         it('throws an error if last poll result was an error', async () => {
             mockOpenGarageApi.getState = () => Promise.reject("HTTP ERROR")
             MockSetTimeout.invoke(openGarage.pollTimer)
-            await eventually(() => {
-                assert.throws(() => currentDoorState.triggerGetSync())
-            })
+            await eventually(() => assert.ok(openGarage.currentState.error))
+            await assert.rejects(currentDoorState.triggerGetSync())
         })
 
         it('polls the status and propagates values to Home', async () => {
@@ -204,13 +204,14 @@ describe('OpenGarage', function() {
             assert.equal(mockOpenGarageApi.targetClosedState, false)
             assert.equal(openGarage.currentDoorState(), Characteristic.CurrentDoorState.OPENING)
             assert.equal(openGarage.targetDoorState(), Characteristic.TargetDoorState.OPEN)
+            assert.equal(currentDoorState.value, Characteristic.CurrentDoorState.OPENING)
+            assert.equal(targetDoorState.value, Characteristic.TargetDoorState.OPEN)
 
             let [pollTimer, afterTimer] = MockSetTimeout.getTimers()
             assert.equal(pollTimer.duration, pollFrequencyMs) // default poll
-            assert.equal(afterTimer.duration, openDurationMs) // amount of time to wait to check state
+            assert.equal(afterTimer.duration, transitionPollMs) // rapid poll interval
 
             mockOpenGarageApi.isClosed = false
-            MockDate.currentTime += openDurationMs
             MockSetTimeout.invoke(afterTimer)
 
             await eventually(() =>{
@@ -229,7 +230,7 @@ describe('OpenGarage', function() {
 
             let [pollTimer, afterTimer] = MockSetTimeout.getTimers()
             assert.equal(pollTimer.duration, pollFrequencyMs) // default poll
-            assert.equal(afterTimer.duration, openDurationMs) // poll
+            assert.equal(afterTimer.duration, transitionPollMs) // rapid poll interval
 
             MockSetTimeout.invoke(afterTimer)
 
